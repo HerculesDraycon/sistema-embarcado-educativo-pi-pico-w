@@ -60,20 +60,27 @@ Esse é o projeto de um sistema embarcado para fins educativos que visa explorar
 
 ### **2. Controle dos Botões**
 
-#### `button_callback(uint gpio, uint32_t events)`
+#### `void button_callback(uint gpio, uint32_t events)`
 - **Descrição**: Realiza as rotinas de interrupção (IRQ) e executa a sequência de instruções ao respectivo botão pressionado.
 - **Parâmetros**:
   - `gpio`: uint que corresponde ao pino GPIO em que o botão está conectado e gerou a interrupção.
   - `events`: Passa as informações sobre que tipo evento na GPIO ocorreu.
 
-### **3. Função Principal (`main`)**
+### **3. Controle de Exibição no Display**
+
+### `void exibir_ssd(char *f1, char *f2, char *f3)`
+- **Descrição**: Baseado na Strings (arrays de chars) recebidas por parâmetro, as exibem de forma subsequente no display, o que dinamiza a operação em toda vez que uma mensagem precisar de ser exibida.
+- **Parâmetros**:
+  - `f1`, `f2` e `f3`: Arrays de chars referenciadas por ponteiro que passam as strings para a função.
+
+### **4. Função Principal (`main`)**
 - **Descrição**:
   - Configura e inicializa periféricos.
   - Inicializa a matriz de LEDs desligados.
   - Entra em um loop infinito que:
-    1. Formata a mensagem padrão exibida no SSD1306.
-    2. Mantém a verificação de algo enviado pela comunicação serial.
-    3. Exibe no display o caracter escolhido e se for um número, também exibe na matriz de LEDs.
+    1. Formata a mensagem inicial exibida no SSD1306.
+    2. Inicia a sequência de estados de execução do programa baseado na escolha realizada pelo usuário.
+    3. Exibe os símbolos e mensagens em sequência nos estados transicionados para que o usuário possa interagir.
 - **Destaques**:
   - Inicializa o PIO com a configuração `pio_matrix`.
 
@@ -81,6 +88,6 @@ Esse é o projeto de um sistema embarcado para fins educativos que visa explorar
 
 - O Display SSD1306 inicialmente apresenta uma mensagem padrão e a matriz de LEDs 5x5 está apagada.
 
-- Ao acionar um dos botões pode-se notar que o estado de LED correspondente é alterado e uma mensagem se apresenta tanto no display quanto na comunicação serial.
+- Ao acionar um dos botões, um dos modos de operação do sistema se inicia.
 
-- Ao digitar um caracter qualquer e envia-lo pela comunicação serial, ele é exibido no Display SSD1306, caso seja um dígito, ele será representado na matriz de LEDs 5x5.
+- O usuário prossegue interagindo com os botões de acordo a cordenação do software que exibirá mensagens no monitor e na matriz de LEDs.

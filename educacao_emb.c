@@ -23,6 +23,7 @@
 
 bool cor = false;                   // Flag de controle da cor representativa do monitor
 ssd1306_t ssd;                      // Inicializa a estrutura do display
+volatile int estado_op = 0;         // Variavel de controle dos estados operantes na execucao
 volatile int btn_a_acionado = 0;    // Variavel de controle do 'botao a' pressioando
 volatile int btn_b_acionado = 0;    // Variavel de controle do 'botao b' pressioando
 
@@ -58,6 +59,17 @@ void button_callback(uint gpio, uint32_t events){
 
     }
     
+}
+// Funcao que recebe strings como parametro e as exibem no ssd
+void exibir_ssd(char *f1, char *f2, char *f3){
+
+    ssd1306_fill(&ssd, cor);  // Limpa o display
+    ssd1306_rect(&ssd, 3, 3, 122, 58, !cor, cor);  // Desenha um retangulo
+    ssd1306_draw_string(&ssd, f1, 8, 10);  // Desenha uma string
+    ssd1306_draw_string(&ssd, f2, 8, 30);  // Desenha uma string
+    ssd1306_draw_string(&ssd, f3, 8, 48);  // Desenha uma string      
+    ssd1306_send_data(&ssd);  // Atualiza o display
+
 }
 
 int main(){
@@ -107,13 +119,8 @@ int main(){
     const char *init_message = "Digite o caracter que deseja:\r\n";
 
     while (true) {
-        // Atualiza o conteudo do display
-        ssd1306_fill(&ssd, cor);  // Limpa o display
-        ssd1306_rect(&ssd, 3, 3, 122, 58, !cor, cor);  // Desenha um retangulo
-        ssd1306_draw_string(&ssd, "Fev de 2025", 8, 10);  // Desenha uma string
-        ssd1306_draw_string(&ssd, "TESTANDO", 20, 30);  // Desenha uma string
-        ssd1306_draw_string(&ssd, "H S Oliveira", 15, 48);  // Desenha uma string      
-        ssd1306_send_data(&ssd);  // Atualiza o display
+        
+        exibir_ssd("Pressione A ou", "B para seu", "referido teste");
         
         sleep_ms(1000);
 
