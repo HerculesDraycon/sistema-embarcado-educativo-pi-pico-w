@@ -73,7 +73,14 @@ Esse é o projeto de um sistema embarcado para fins educativos que visa explorar
 - **Parâmetros**:
   - `f1`, `f2` e `f3`: Arrays de chars referenciadas por ponteiro que passam as strings para a função.
 
-### **4. Função Principal (`main`)**
+### **4. Funções de otimização do código**
+
+### `int rand_num(int min, int max)`
+- **Descrição**: Baseado nos dois ints passados como limites de um intervalo, a função retorna um número sorteado naquele intervalo;
+- **Parâmetros**:
+  - `min` e `max`: ints passados como limites dos intervalos.
+
+### **5. Função Principal (`main`)**
 - **Descrição**:
   - Configura e inicializa periféricos.
   - Inicializa a matriz de LEDs desligados.

@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 #include "pico/stdlib.h"
 #include "hardware/clocks.h"
 #include "hardware/pio.h"
@@ -26,6 +28,8 @@ ssd1306_t ssd;                      // Inicializa a estrutura do display
 volatile int estado_op = 0;         // Variavel de controle dos estados operantes na execucao
 volatile int btn_a_acionado = 0;    // Variavel de controle do 'botao a' pressioando
 volatile int btn_b_acionado = 0;    // Variavel de controle do 'botao b' pressioando
+uint32_t tempo_msg = 0;             // Armazena o tempo de inicio da exibicao
+bool mensagem_tela = false;         // Indica se a mensagem esta ativa
 
 // Funcao responsavel por estruturar o funcionamento da matriz de leds usada no projeto
 uint32_t matrix_rgb(double r, double g, double b) {
@@ -43,23 +47,6 @@ void desenho_pio(double *desenho, uint32_t valor_led, PIO pio, uint sm, double r
             pio_sm_put_blocking(pio, sm, valor_led);
     }
 }
-
-// Funcao com rotina de interrupcao (IRQ) que detecta e controla os botoes pressionados
-void button_callback(uint gpio, uint32_t events){
-    // Obtencao do tempo real em microsegundos numa variavel uint
-    uint32_t marco = time_us_32();  
-    //Utilizacao de debounce controlado por sowtware para fazer com que o botao pressionado execute a instrucao somente uma vez
-    if(gpio == BTN_A && (marco -  btn_a_acionado) > DEBOUNCE_LINE){
-
-        btn_a_acionado = marco;
-
-    } else if(gpio == BTN_B && (marco -  btn_b_acionado) > DEBOUNCE_LINE){
-
-        btn_b_acionado = marco;
-
-    }
-    
-}
 // Funcao que recebe strings como parametro e as exibem no ssd
 void exibir_ssd(char *f1, char *f2, char *f3){
 
@@ -71,8 +58,42 @@ void exibir_ssd(char *f1, char *f2, char *f3){
     ssd1306_send_data(&ssd);  // Atualiza o display
 
 }
+// Funcao com rotina de interrupcao (IRQ) que detecta e controla os botoes pressionados
+void button_callback(uint gpio, uint32_t events){
+    // Obtencao do tempo real em microsegundos numa variavel uint
+    uint32_t marco = time_us_32();  
+    //Utilizacao de debounce controlado por sowtware para fazer com que o botao pressionado execute a instrucao somente uma vez
+    if(gpio == BTN_A && (marco -  btn_a_acionado) > DEBOUNCE_LINE){
+
+        btn_a_acionado = marco;
+
+        exibir_ssd("Preparando", "para o Desafio", "dos Indicadores");
+        tempo_msg = to_ms_since_boot(get_absolute_time());
+        mensagem_tela = true;
+
+        estado_op = 1;
+
+    } else if(gpio == BTN_B && (marco -  btn_b_acionado) > DEBOUNCE_LINE){
+
+        btn_b_acionado = marco;
+
+        exibir_ssd("Preparando", "para o Desafio", "do Bip");
+        tempo_msg = to_ms_since_boot(get_absolute_time());
+        mensagem_tela = true;
+
+        estado_op = 2;
+
+    }
+    
+}
+// Funcao que recebe os limites e sorteia um numero nesse intervalo
+int rand_num(int min, int max){
+    int s_num = min + rand() % (max - min + 1);
+}
 
 int main(){
+
+    srand(time(NULL));
 
     PIO pio = pio0;                      // Declaracao incial pio
     uint32_t valor_led = 0;              // Declaracao incial valor LED
@@ -115,14 +136,17 @@ int main(){
     // Chamada de funcao que executa instrucoes com as rotinas de interrupcao habilitadas para cada botao
     gpio_set_irq_enabled_with_callback(BTN_A, GPIO_IRQ_EDGE_FALL, true, &button_callback);
     gpio_set_irq_enabled_with_callback(BTN_B, GPIO_IRQ_EDGE_FALL, true, &button_callback);
-
-    const char *init_message = "Digite o caracter que deseja:\r\n";
+    // Exibicao previa da tela ja no inicio do sistema
+    exibir_ssd("Pressione A ou", "B para seu", "referido teste");
 
     while (true) {
+
+        if(mensagem_tela && (to_ms_since_boot(get_absolute_time()) - tempo_msg >= 2000)){
+            exibir_ssd("Pressione A ou", "B para seu", "referido teste");
+            mensagem_tela = false;
+        }
         
-        exibir_ssd("Pressione A ou", "B para seu", "referido teste");
-        
-        sleep_ms(1000);
+        sleep_ms(10);
 
     }
     
