@@ -3,8 +3,8 @@
 
 extern double frame_esq[25];
 extern double frame_dir[25];
-extern double frame_2[25];
-extern double frame_3[25];
+extern double frame_cima[25];
+extern double frame_baixo[25];
 extern double frame_4[25];
 extern double frame_5[25];
 extern double frame_6[25];

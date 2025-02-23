@@ -25,12 +25,20 @@
 
 bool cor = false;                   // Flag de controle da cor representativa do monitor
 ssd1306_t ssd;                      // Inicializa a estrutura do display
+volatile int sorteado;
+volatile int controle = 0;
 volatile int estado_op = 0;         // Variavel de controle dos estados operantes na execucao
 volatile int btn_a_acionado = 0;    // Variavel de controle do 'botao a' pressioando
 volatile int btn_b_acionado = 0;    // Variavel de controle do 'botao b' pressioando
 uint32_t tempo_msg = 0;             // Armazena o tempo de inicio da exibicao
 bool mensagem_tela = false;         // Indica se a mensagem esta ativa
+uint32_t tempo_inicio_led = 0;      // Armazena o tempo do ultimo desenho
+bool exibindo_led = false;          // Indica se um desenho esta sendo exibido
 
+// Funcao que recebe os limites e sorteia um numero nesse intervalo
+int rand_num(int min, int max){
+    return min + rand() % (max - min + 1);
+}
 // Funcao responsavel por estruturar o funcionamento da matriz de leds usada no projeto
 uint32_t matrix_rgb(double r, double g, double b) {
     unsigned char R, G, B;
@@ -65,30 +73,54 @@ void button_callback(uint gpio, uint32_t events){
     //Utilizacao de debounce controlado por sowtware para fazer com que o botao pressionado execute a instrucao somente uma vez
     if(gpio == BTN_A && (marco -  btn_a_acionado) > DEBOUNCE_LINE){
 
+        sorteado = rand_num(1, 2);
+
         btn_a_acionado = marco;
 
-        exibir_ssd("Preparando", "para o Desafio", "dos Indicadores");
-        tempo_msg = to_ms_since_boot(get_absolute_time());
-        mensagem_tela = true;
+        if(estado_op == 0){
+            exibir_ssd("Preparando", "para o Desafio", "dos Indicadores");
+            tempo_msg = to_ms_since_boot(get_absolute_time());
+            mensagem_tela = true;
 
-        estado_op = 1;
+            estado_op = 1;
+        }
+
+        if(exibindo_led){
+
+            uint32_t tempo_fim = to_ms_since_boot(get_absolute_time());
+            uint32_t tempo_decorrido = tempo_fim - tempo_inicio_led;
+
+            printf("Tempo de resposta: %d ms\n", tempo_decorrido);
+            exibindo_led = false; 
+
+        }
 
     } else if(gpio == BTN_B && (marco -  btn_b_acionado) > DEBOUNCE_LINE){
 
+        sorteado = rand_num(1, 2);
+
         btn_b_acionado = marco;
 
-        exibir_ssd("Preparando", "para o Desafio", "do Bip");
-        tempo_msg = to_ms_since_boot(get_absolute_time());
-        mensagem_tela = true;
+        if(estado_op == 0){
+            exibir_ssd("Preparando", "para o Desafio", "dos Indicadores");
+            tempo_msg = to_ms_since_boot(get_absolute_time());
+            mensagem_tela = true;
 
-        estado_op = 2;
+            estado_op = 2;
+        }
+
+        if(exibindo_led){
+
+            uint32_t tempo_fim = to_ms_since_boot(get_absolute_time());
+            uint32_t tempo_decorrido = tempo_fim - tempo_inicio_led;
+
+            printf("Tempo de resposta: %d ms\n", tempo_decorrido);
+            exibindo_led = false; 
+
+        }
 
     }
     
-}
-// Funcao que recebe os limites e sorteia um numero nesse intervalo
-int rand_num(int min, int max){
-    int s_num = min + rand() % (max - min + 1);
 }
 
 int main(){
@@ -144,6 +176,35 @@ int main(){
         if(mensagem_tela && (to_ms_since_boot(get_absolute_time()) - tempo_msg >= 2000)){
             exibir_ssd("Pressione A ou", "B para seu", "referido teste");
             mensagem_tela = false;
+        }
+
+        if(estado_op == 1){
+
+            if(!exibindo_led){
+
+
+                tempo_inicio_led = to_ms_since_boot(get_absolute_time());
+                exibindo_led = true;
+
+                if(controle == 8){
+                    desenho_pio(frame_cima, valor_led, pio, sm, r, g, b);
+                    controle = 0;
+                }
+
+                if(sorteado == 1){
+                    desenho_pio(frame_baixo, valor_led, pio, sm, r, g, b);
+                    sleep_ms(2000);
+                    desenho_pio(frame_esq, valor_led, pio, sm, r, g, b);
+                    controle++;
+                } else if(sorteado == 2){
+                    desenho_pio(frame_baixo, valor_led, pio, sm, r, g, b);
+                    sleep_ms(2000);
+                    desenho_pio(frame_dir, valor_led, pio, sm, r, g, b);
+                    controle++;
+                }
+
+            }
+
         }
         
         sleep_ms(10);
