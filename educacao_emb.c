@@ -27,6 +27,7 @@ bool cor = false;                   // Flag de controle da cor representativa do
 ssd1306_t ssd;                      // Inicializa a estrutura do display
 volatile int sorteado;
 volatile int controle = 0;
+volatile int pontuacao_a = 0;
 volatile int estado_op = 0;         // Variavel de controle dos estados operantes na execucao
 volatile int btn_a_acionado = 0;    // Variavel de controle do 'botao a' pressioando
 volatile int btn_b_acionado = 0;    // Variavel de controle do 'botao b' pressioando
@@ -90,6 +91,10 @@ void button_callback(uint gpio, uint32_t events){
             uint32_t tempo_fim = to_ms_since_boot(get_absolute_time());
             uint32_t tempo_decorrido = tempo_fim - tempo_inicio_led;
 
+            if(tempo_decorrido < 750){
+                pontuacao_a++;
+            }
+
             printf("Tempo de resposta: %d ms\n", tempo_decorrido);
             exibindo_led = false; 
 
@@ -114,6 +119,10 @@ void button_callback(uint gpio, uint32_t events){
             uint32_t tempo_fim = to_ms_since_boot(get_absolute_time());
             uint32_t tempo_decorrido = tempo_fim - tempo_inicio_led;
 
+            if(tempo_decorrido < 750){
+                pontuacao_a++;
+            }
+
             printf("Tempo de resposta: %d ms\n", tempo_decorrido);
             exibindo_led = false; 
 
@@ -129,7 +138,7 @@ int main(){
 
     PIO pio = pio0;                      // Declaracao incial pio
     uint32_t valor_led = 0;              // Declaracao incial valor LED
-    double r = 0.0, b = 0.0, g = 0.0;    // Declaração incial valores RGB
+    double r = 0.0, b = 1.0, g = 0.0;    // Declaração incial valores RGB
 
     uint offset = pio_add_program(pio, &pio_matrix_program);
     uint sm = pio_claim_unused_sm(pio, true);
@@ -182,25 +191,32 @@ int main(){
 
             if(!exibindo_led){
 
-
-                tempo_inicio_led = to_ms_since_boot(get_absolute_time());
                 exibindo_led = true;
 
                 if(controle == 8){
-                    desenho_pio(frame_cima, valor_led, pio, sm, r, g, b);
+                    desenho_pio(frame_linha_media_h, valor_led, pio, sm, r, g, b);
+                    printf("\n Pontuacao: %d", pontuacao_a);
                     controle = 0;
                 }
 
                 if(sorteado == 1){
-                    desenho_pio(frame_baixo, valor_led, pio, sm, r, g, b);
-                    sleep_ms(2000);
+
+                    desenho_pio(frame_disparo, valor_led, pio, sm, r, g, b);
+                    sleep_ms(rand_num(15, 30)*100);
                     desenho_pio(frame_esq, valor_led, pio, sm, r, g, b);
+                    tempo_inicio_led = to_ms_since_boot(get_absolute_time());
+
                     controle++;
+
                 } else if(sorteado == 2){
-                    desenho_pio(frame_baixo, valor_led, pio, sm, r, g, b);
-                    sleep_ms(2000);
+
+                    desenho_pio(frame_disparo, valor_led, pio, sm, r, g, b);
+                    sleep_ms(rand_num(15, 30)*100);
                     desenho_pio(frame_dir, valor_led, pio, sm, r, g, b);
+                    tempo_inicio_led = to_ms_since_boot(get_absolute_time());
+
                     controle++;
+
                 }
 
             }
