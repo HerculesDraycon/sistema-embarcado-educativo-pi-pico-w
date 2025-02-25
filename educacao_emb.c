@@ -108,7 +108,7 @@ void button_callback(uint gpio, uint32_t events){
         btn_b_acionado = marco;
 
         if(estado_op == 0){
-            exibir_ssd("Preparando", "para o Desafio", "dos Indicadores");
+            exibir_ssd("Preparando", "para o Desafio", "do Pulsar");
             tempo_msg = to_ms_since_boot(get_absolute_time());
             mensagem_tela = true;
 

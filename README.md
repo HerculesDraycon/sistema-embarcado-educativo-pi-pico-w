@@ -22,6 +22,9 @@ Esse é o projeto de um sistema embarcado para fins educativos que visa explorar
 ### **Customizadas**
 - `"pio_matrix.pio.h"`: Configuração do PIO para controle da matriz de LEDs.
 - `lib/frames.h`: Frames que representam os números exibidos na matriz de LEDs.
+- `lib/font.h`: Arquivo que contém as fontes produzidas manualmente e utilizadas na exibição do Display.
+- `lib/ssd1306.h`: Arquivo de controle das funcionalidades e compatibilidades SSD1306.
+- `lib/main_led.h`: Arquivo de comando do comportamento do LED RGB principal para fins de modularização do código.
 
 ## **Constantes**
 - `I2C_PORT`: Porta de inicialização do display.
@@ -79,6 +82,17 @@ Esse é o projeto de um sistema embarcado para fins educativos que visa explorar
 - **Descrição**: Baseado nos dois ints passados como limites de um intervalo, a função retorna um número sorteado naquele intervalo;
 - **Parâmetros**:
   - `min` e `max`: ints passados como limites dos intervalos.
+
+### `void led_init(uint32_t pino_led)`
+- **Descrição**: Inicia os LEDs dos pinos passados por parâmetro;
+- **Parâmetros**:
+  - `pino_led`: int que armazena a gpio a ser operada.
+
+### `void pisca_led(uint32_t pino_led, uint32_t random)`
+- **Descrição**: Acende e apaga os LEDs dos pinos passados por parâmetro numa quantidade aleatória passada por parâmetro;
+- **Parâmetros**:
+  - `pino_led`: int que armazena a gpio a ser operada.
+  - `random`: int que armazena a quantidade de vezes de iteração do pulso de LED.
 
 ### **5. Função Principal (`main`)**
 - **Descrição**:
