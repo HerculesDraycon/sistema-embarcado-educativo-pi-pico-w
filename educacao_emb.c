@@ -9,6 +9,7 @@
 #include "lib/ssd1306.h"
 #include "lib/font.h"
 #include "lib/frames.h"
+#include "lib/main_led.h"
 
 #define I2C_PORT i2c1         // Porta de inicializacao do display
 #define ENDERECO 0x3C         // Endereco de inicializacao do display
@@ -220,6 +221,21 @@ int main(){
                 }
 
             }
+
+        }
+
+        if(estado_op == 2){
+
+            for(int i=0; i<3; i++){
+
+                sleep_ms(5000);
+                int r_num = rand_num(1, 8);
+                pisca_led(RED_PINO, r_num);
+                printf("Numero de piscadas da etapa: %d", r_num);
+
+            }
+
+            desenho_pio(frame_linha_media_h, valor_led, pio, sm, r, g, b);
 
         }
         

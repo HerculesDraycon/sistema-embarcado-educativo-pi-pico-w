@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(educacao_emb educacao_emb.c lib/ssd1306.c lib/frames.c)
+add_executable(educacao_emb educacao_emb.c lib/ssd1306.c lib/frames.c lib/main_led.c)
 
 pico_set_program_name(educacao_emb "educacao_emb")
 pico_set_program_version(educacao_emb "0.1")
