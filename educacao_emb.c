@@ -196,6 +196,7 @@ int main(){
 
                 if(controle == 8){
                     desenho_pio(frame_linha_media_h, valor_led, pio, sm, r, g, b);
+                    sleep_ms(2500);
                     printf("\n Pontuacao: %d", pontuacao_a);
                     controle = 0;
                 }
