@@ -1,7 +1,5 @@
 # Sistema Embarcado Educativo de Foco e Cognição
 
-**LINK DO VÍDEO ENSAIO:** https://drive.google.com/file/d/10hfpzdFgt2yyOdLYQIDBa1vnevZhp0xW/view?usp=sharing
-
 # Documentação do Código
 
 ## **Descrição Geral**
